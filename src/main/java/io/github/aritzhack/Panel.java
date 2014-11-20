@@ -6,7 +6,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import java.awt.Container;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,6 +18,8 @@ public class Panel extends JPanel {
     private final JPanel panelLeft, panelCenter, panelRight;
     private final JButton testButtonL, testButtonC, testButtonR;
     private final MainCanvas canvas;
+
+    private boolean buttonsInit = false;
 
     public Panel() {
         super(new MigLayout(
@@ -32,7 +34,7 @@ public class Panel extends JPanel {
         this.panelCenter = new JPanel(new MigLayout("ins 0"));
         this.panelRight = new JPanel(new MigLayout("ins 0"));
 
-        this.testButtonL = new JButton("Reload GUI!");
+        this.testButtonL = new JButton("Clear buttons");
         this.testButtonC = new JButton("Center!");
         this.testButtonR = new JButton("Right!");
 
@@ -41,13 +43,14 @@ public class Panel extends JPanel {
         testButtonL.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Container parent = Panel.this.getParent();
-                parent.removeAll();
-                parent.add(new Panel(), "push, grow");
-                parent.revalidate();
+                for (Component c : Panel.this.panelLeft.getComponents()) {
+                    if (c instanceof ImageButton) {
+                        if (c.getWidth() == 0) return;
+                        ((ImageButton) c).setImage(null);
+                    }
+                }
             }
         });
-
         testButtonR.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -86,8 +89,6 @@ public class Panel extends JPanel {
         this.panelLeft.add(new ImageButton(), "w 49%, wmax 49%, gapleft 2%, growy, wrap");
 
         this.panelLeft.setSize(this.panelLeft.getSize());
-
-        // C:\Users\USUARIO\Desktop\Test.png
     }
 
     private void initCenterPane() {
@@ -103,5 +104,18 @@ public class Panel extends JPanel {
         this.panelRight.add(this.testButtonR, "ay top, pushx, growx");
     }
 
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
 
+        if (!buttonsInit) {
+            for (Component c : this.panelLeft.getComponents()) {
+                if (c instanceof ImageButton) {
+                    if (c.getWidth() == 0) return;
+                    ((ImageButton) c).setImage(null);
+                }
+            }
+            buttonsInit = true;
+        }
+    }
 }

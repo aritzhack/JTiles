@@ -42,7 +42,5 @@ public class Main {
         FRAME.setMinimumSize(new Dimension(830, 600));
         FRAME.pack();
         FRAME.setVisible(true);
-
-
     }
 }
